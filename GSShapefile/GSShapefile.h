@@ -31,9 +31,6 @@
 
 @interface GSShapefile : NSObject
 
-/// Shapefile (.shp) data.
-@property NSData *shapefileData;
-
 /// The bounding box covered by this shapefile.
 @property GSShapefileBoundingBox *boundingBox;
 

@@ -12,6 +12,7 @@ Currently supported shape types include:
   PolyLine
 
 Sample code:
+```
   NSData *filedata = [[NSData alloc] initWithContentsOfFile:@"somefile.shp"];
   GSShapefile *shapefile = [[GSShapefile alloc] initWithData:fileData];
   if (!shapefile) return NO;
@@ -23,3 +24,4 @@ Sample code:
 	// Can access point data using record.points[index].x and record.points[index].y
   }
   NSLog(@"Total point count: %d (%d records)", totalPoints, shapefile.records.count);
+```

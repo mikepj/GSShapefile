@@ -4,12 +4,12 @@ GSShapefile
 These Objective-C classes will read and parse ESRI Shapefiles.  This code follows the Shapefile specification found at http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf.
 
 Requirements:
-  ARC memory management
+- ARC memory management
 
 Currently supported shape types include:
-  Point
-  Polygon
-  PolyLine
+- Point
+- Polygon
+- PolyLine
 
 Sample code:
 ```

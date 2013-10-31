@@ -38,7 +38,7 @@ Sample code:
   NSLog(@"Total point count: %d (%d records)", totalPoints, shapefile.records.count);
 ```
 
-If you are planning to reduce the number of points in your Shapefile before working with it, you can use the built-in Ramer–Douglas–Peucker algorithm
+If you would like to reduce the number of points in your Shapefile before working with it, you can use the built-in Ramer–Douglas–Peucker algorithm
 ```
   #import "GSShapefile.h"
   #import "GSShapefile+RDP.h"

@@ -29,4 +29,17 @@
 
 @implementation GSShapefileBoundingBox
 
+- (id)copyWithZone:(NSZone *)zone {
+	GSShapefileBoundingBox *c = [[[self class] allocWithZone:zone] init];
+	c.xMin = self.xMin;
+	c.xMax = self.xMax;
+	c.yMin = self.yMin;
+	c.yMax = self.yMax;
+	c.zMin = self.zMin;
+	c.zMax = self.zMax;
+	c.mMin = self.mMin;
+	c.mMax = self.mMax;
+	return c;
+}
+
 @end

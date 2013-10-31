@@ -27,7 +27,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface GSShapefileBoundingBox : NSObject
+@interface GSShapefileBoundingBox : NSObject <NSCopying>
 
 // All bounding boxes have these set.
 @property CGFloat xMin;

@@ -19,6 +19,9 @@ Possible features to add down the line:
 
 Sample code:
 ```
+  #import "GSShapefile.h"
+
+
   NSData *filedata = [[NSData alloc] initWithContentsOfFile:@"somefile.shp"];
   GSShapefile *shapefile = [[GSShapefile alloc] initWithData:fileData];
   if (!shapefile) return NO;
@@ -33,4 +36,19 @@ Sample code:
 	// Some shape types have "parts" associated with them.  You can find the parts listed as an array of NSNumbers in record.parts.
   }
   NSLog(@"Total point count: %d (%d records)", totalPoints, shapefile.records.count);
+```
+
+If you are planning to reduce the number of points in your Shapefile before working with it, you can use the built-in Ramer–Douglas–Peucker algorithm
+```
+  #import "GSShapefile.h"
+  #import "GSShapefile+RDP.h"
+
+  NSData *filedata = [[NSData alloc] initWithContentsOfFile:@"somefile.shp"];
+  GSShapefile *shapefile = [[GSShapefile alloc] initWithData:fileData];
+  if (!shapefile) return NO;
+
+  NSUInteger originalNumPoints = [shapefile totalPointCount];
+  [shapefile rdpReducePointsWithEpsilon:1];
+  NSUInteger newNumPoints = [shapefile totalPointCount];
+  NSLog(@"Reduced the number of points from %d to %d.", originalNumPoints, newNumPoints);
 ```

@@ -42,6 +42,16 @@
 	return self;
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+	GSShapefileRecord *c = [[[self class] allocWithZone:zone] init];
+	c.recordNumber = self.recordNumber;
+	c.shapeType = self.shapeType;
+	c.boundingBox = [self.boundingBox copy];
+	c.parts = [[NSArray alloc] initWithArray:self.parts copyItems:YES];
+	[c setPoints:self.points count:self.pointsCount];
+	return c;
+}
+
 - (void)dealloc {
 	if (_pointsCount) {
 		free(_points);
@@ -60,16 +70,19 @@
 	self.shapeType = [GSShapefileHelper fetchIntegerFromPointer:fileStart + fileIndex + (2 * SHAPEFILE_INT_SIZE) isBigEndian:NO];
 	fileIndex += 3 * SHAPEFILE_INT_SIZE;
 
+	GSShapefilePoint *newPoints = NULL;
+	NSUInteger numPoints = 0;
+	
 	if (self.shapeType == GSShapefileShapeTypePoint) {
 		// Allocate the points
-		_points = malloc(1 * sizeof(GSShapefilePoint));
-		_pointsCount = 1;
+		newPoints = malloc(1 * sizeof(GSShapefilePoint));
+		numPoints = 1;
 		
 		// Parse the X and Y values
 		if (fileIndex + (2 * SHAPEFILE_DOUBLE_SIZE) > recordData.length) return NO;
-		_points[0].x = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
+		newPoints[0].x = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
 		fileIndex += SHAPEFILE_DOUBLE_SIZE;
-		_points[0].y = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
+		newPoints[0].y = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
 		fileIndex += SHAPEFILE_DOUBLE_SIZE;
 	}
 	else if ((self.shapeType == GSShapefileShapeTypePolyLine) || (self.shapeType == GSShapefileShapeTypePolygon)) {
@@ -89,7 +102,7 @@
 		
 		// Read the number of points.
 		if (fileIndex + SHAPEFILE_INT_SIZE > recordData.length) return NO;
-		NSInteger numPoints = [GSShapefileHelper fetchIntegerFromPointer:fileStart + fileIndex isBigEndian:NO];
+		numPoints = [GSShapefileHelper fetchIntegerFromPointer:fileStart + fileIndex isBigEndian:NO];
 		fileIndex += SHAPEFILE_INT_SIZE;
 		
 		// Read the parts.
@@ -104,7 +117,7 @@
 		self.parts = newParts;
 		
 		// Allocate the points.
-		GSShapefilePoint *newPoints = malloc(numPoints * sizeof(GSShapefilePoint));
+		newPoints = malloc(numPoints * sizeof(GSShapefilePoint));
 		
 		// Read the points.
 		NSUInteger newPointsIndex = 0;
@@ -117,17 +130,30 @@
 
 			newPointsIndex++;
 		}
-		
-		if (_pointsCount) {
-			free(_points);
-			_points = NULL;
-			_pointsCount = 0;
-		}
-		_points = newPoints;
-		_pointsCount = numPoints;
+	}
+
+	// Parsing is done, set our points.
+	[self setPoints:newPoints count:numPoints];
+	
+	if (newPoints) free(newPoints);
+
+	return YES;
+}
+
+- (void)setPoints:(GSShapefilePoint *)pArray count:(NSUInteger)pCount {
+	if (_pointsCount) {
+		free(_points);
+		_points = NULL;
+		_pointsCount = 0;
 	}
 	
-	return YES;
+	if ((pCount > 0) && (pArray != NULL)) {
+		GSShapefilePoint *pointsCopy = malloc(pCount * sizeof(GSShapefilePoint));
+		memcpy(pointsCopy, pArray, pCount * sizeof(GSShapefilePoint));
+		
+		_points = pointsCopy;
+		_pointsCount = pCount;
+	}
 }
 
 @end

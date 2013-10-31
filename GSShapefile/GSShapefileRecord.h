@@ -27,7 +27,6 @@
 
 #import <Foundation/Foundation.h>
 
-//#import "GSShapefilePoint.h"
 #import "GSShapefileBoundingBox.h"
 #import "GSShapefileHelper.h"
 
@@ -42,7 +41,8 @@ typedef struct {
 	CGFloat m;
 } GSShapefilePoint;
 
-@interface GSShapefileRecord : NSObject
+
+@interface GSShapefileRecord : NSObject <NSCopying>
 
 /// The record number defined in the Shapefile.
 @property NSInteger recordNumber;
@@ -70,5 +70,11 @@ typedef struct {
  * \returns YES if record was parsed successfully.
  */
 - (BOOL)parseRecordData:(NSData *)recordData;
+
+/*! There may be certain situations where we want to set the points array from outside our class (the RDP category, for example).  This method makes sure that is done properly.  The points passed in is copied, so the client retains ownership of the points array and must free it properly.
+ * \param pArray A new array of GSShapefilePoints.
+ * \param pCount The count of how many points are in pArray.
+ */
+- (void)setPoints:(GSShapefilePoint *)pArray count:(NSUInteger)pCount;
 
 @end

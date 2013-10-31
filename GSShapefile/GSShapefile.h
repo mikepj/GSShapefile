@@ -54,4 +54,10 @@
  */
 - (NSUInteger)totalPointCount;
 
+/*! Returns an NSData object with bytes for this Shapefile, to save it to a file, for example.
+ * This can be used to either build your own Shapefile from the ground up, or to take an existing Shapefile and process it (reduce points using the RDP code, for example).
+ * \returns The NSData object with our file data.
+ */
+- (NSData *)saveData;
+
 @end

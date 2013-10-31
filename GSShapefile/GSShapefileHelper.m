@@ -44,4 +44,17 @@
 	return (CGFloat)r;
 }
 
+#pragma mark Buffer Writers
++ (void)writeInteger:(NSInteger)i toBuffer:(void *)pointer useBigEndian:(BOOL)bigEndian {
+	uint32_t r = i;
+	if (bigEndian) r = CFSwapInt32HostToBig(r);
+	else r = CFSwapInt32HostToLittle(r);
+	memcpy(pointer, &r, sizeof(uint32_t));
+}
+
++ (void)writeFloat:(CGFloat)f toBuffer:(void *)pointer {
+	double r = f;
+	memcpy(pointer, &r, sizeof(double));
+}
+
 @end

@@ -1,7 +1,7 @@
 GSShapefile
 ===========
 
-These Objective-C classes will read and parse ESRI Shapefiles.  This code follows the Shapefile specification found at http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf.
+These Objective-C classes will read and parse ESRI Shapefiles.  This code follows the Shapefile specification found at http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf.  This code is not thread safe, but it does not need to be run on the main thread. 
 
 Note:  I have not included this code in a production app yet.  I will remove this note once it has been tested enough to release.
 
@@ -16,6 +16,8 @@ Currently supported shape types include:
 Possible features to add down the line:
 - [ ] Support of additional shape types.
 - [ ] Support parsing meta data from related files (.shx, .dbf, etc).
+- [X] Reduce the number of points making up each shape.
+- [X] Save file support.
 
 Sample code:
 ```
@@ -51,4 +53,8 @@ If you would like to reduce the number of points in your Shapefile before workin
   [shapefile rdpReducePointsWithEpsilon:1];
   NSUInteger newNumPoints = [shapefile totalPointCount];
   NSLog(@"Reduced the number of points from %d to %d.", originalNumPoints, newNumPoints);
+  
+  // Might want to save out the new Shapefile.
+  NSData *smallerShapefileData = [shapefile saveData];
+  [smallerShapefileData writeToFile:@"foo" atomically:YES];
 ```

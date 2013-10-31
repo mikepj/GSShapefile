@@ -87,12 +87,13 @@
 	}
 	else if ((self.shapeType == GSShapefileShapeTypePolyLine) || (self.shapeType == GSShapefileShapeTypePolygon)) {
 		// Parse the bounding box.
-		GSShapefileBoundingBox *b;
+		GSShapefileBoundingBox *b = [[GSShapefileBoundingBox alloc] init];
 		if (fileIndex + (4 * SHAPEFILE_DOUBLE_SIZE) > recordData.length) return NO;
 		b.xMin = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex + (0 * SHAPEFILE_DOUBLE_SIZE)];
 		b.yMin = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex + (1 * SHAPEFILE_DOUBLE_SIZE)];
 		b.xMax = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex + (2 * SHAPEFILE_DOUBLE_SIZE)];
 		b.yMax = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex + (3 * SHAPEFILE_DOUBLE_SIZE)];
+		self.boundingBox = b;
 		fileIndex += 4 * SHAPEFILE_DOUBLE_SIZE;
 
 		// Read the number of parts.
@@ -154,6 +155,109 @@
 		_points = pointsCopy;
 		_pointsCount = pCount;
 	}
+}
+
+- (NSData *)saveData {
+	if (self.shapeType == GSShapefileShapeTypePoint) {
+		// header + shape type + 1 point.
+		NSUInteger bufferSize = (3 * SHAPEFILE_INT_SIZE) + (2 * SHAPEFILE_DOUBLE_SIZE);
+		unsigned char *buffer = malloc(bufferSize);
+		NSUInteger index = 0;
+		
+		// Write the record number.
+		[GSShapefileHelper writeInteger:self.recordNumber toBuffer:buffer + index useBigEndian:YES];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the content length (20 bytes total, 10 16 bit words)
+		[GSShapefileHelper writeInteger:10 toBuffer:buffer + index useBigEndian:YES];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the shape type.
+		[GSShapefileHelper writeInteger:self.shapeType toBuffer:buffer + index useBigEndian:NO];
+		index += SHAPEFILE_INT_SIZE;
+		
+		if (self.pointsCount > 0) {
+			// Write the X value.
+			[GSShapefileHelper writeFloat:self.points[0].x toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+			
+			// Write the Y value.
+			[GSShapefileHelper writeFloat:self.points[0].y toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+		}
+		
+		// Create the NSData object and free the buffer.
+		NSData *retData = [[NSData alloc] initWithBytes:buffer length:bufferSize];
+		free(buffer);
+		
+		return retData;
+	}
+	else if ((self.shapeType == GSShapefileShapeTypePolyLine) || (self.shapeType == GSShapefileShapeTypePolygon)) {
+		// header + shape type + bounding box + num parts and num points + parts + points.
+		NSUInteger bufferSize = (3 * SHAPEFILE_INT_SIZE) + (4 * SHAPEFILE_DOUBLE_SIZE) + (2 * SHAPEFILE_INT_SIZE) + (self.parts.count * SHAPEFILE_INT_SIZE) + (self.pointsCount * 2 * SHAPEFILE_DOUBLE_SIZE);
+		unsigned char *buffer = malloc(bufferSize);
+		NSUInteger index = 0;
+		
+		// Write the record number.
+		[GSShapefileHelper writeInteger:self.recordNumber toBuffer:buffer + index useBigEndian:YES];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the content length (in 16 bit words)
+		[GSShapefileHelper writeInteger:(bufferSize - (2 * SHAPEFILE_INT_SIZE)) / 2 toBuffer:buffer + index useBigEndian:YES];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the shape type.
+		[GSShapefileHelper writeInteger:self.shapeType toBuffer:buffer + index useBigEndian:NO];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the bounding box.
+		if (self.boundingBox) {
+			[GSShapefileHelper writeFloat:self.boundingBox.xMin toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+			[GSShapefileHelper writeFloat:self.boundingBox.yMin toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+			[GSShapefileHelper writeFloat:self.boundingBox.xMax toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+			[GSShapefileHelper writeFloat:self.boundingBox.yMax toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+		}
+		else {
+			index += 4 * SHAPEFILE_DOUBLE_SIZE;
+		}
+		
+		// Write the number of parts.
+		[GSShapefileHelper writeInteger:self.parts.count toBuffer:buffer + index useBigEndian:NO];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the number of points.
+		[GSShapefileHelper writeInteger:self.pointsCount toBuffer:buffer + index useBigEndian:NO];
+		index += SHAPEFILE_INT_SIZE;
+		
+		// Write the parts.
+		for (NSNumber *partNumber in self.parts) {
+			[GSShapefileHelper writeInteger:[partNumber integerValue] toBuffer:buffer + index useBigEndian:NO];
+			index += SHAPEFILE_INT_SIZE;
+		}
+		
+		// Write the points.
+		for (NSUInteger i = 0; i < self.pointsCount; i++) {
+			// Write the X value.
+			[GSShapefileHelper writeFloat:self.points[i].x toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+			
+			// Write the Y value.
+			[GSShapefileHelper writeFloat:self.points[i].y toBuffer:buffer + index];
+			index += SHAPEFILE_DOUBLE_SIZE;
+		}
+		
+		// Create the NSData object and free the buffer.
+		NSData *retData = [[NSData alloc] initWithBytes:buffer length:bufferSize];
+		free(buffer);
+		
+		return retData;
+	}
+	
+	return nil;
 }
 
 @end

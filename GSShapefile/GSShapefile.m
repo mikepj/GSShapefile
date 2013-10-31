@@ -68,6 +68,7 @@
 	b.zMax = [GSShapefileHelper fetchFloatFromPointer:&fileIndex[76]];
 	b.mMin = [GSShapefileHelper fetchFloatFromPointer:&fileIndex[84]];
 	b.mMax = [GSShapefileHelper fetchFloatFromPointer:&fileIndex[92]];
+	self.boundingBox = b;
 	
 	self.records = [self parseShapefileRecords:shpData];
 	
@@ -124,6 +125,93 @@
 	
 	if (records.count == 0) return nil;
 	else return records;
+}
+
+- (NSData *)saveData {
+	// Get NSData objects for all our records.
+	NSMutableArray *recordData = [NSMutableArray array];
+	
+	NSUInteger totalRecordSize = 0;
+	for (GSShapefileRecord *record in self.records) {
+		NSData *d = [record saveData];
+		if (d) {
+			[recordData addObject:d];
+			totalRecordSize += d.length;
+		}
+	}
+	
+	// 100 byte header + records
+	NSUInteger headerSize = 100;
+	NSUInteger bufferSize = headerSize + totalRecordSize;
+	unsigned char *headerBuffer = malloc(headerSize);
+	NSUInteger index = 0;
+	
+	// Write the file magic number.
+	[GSShapefileHelper writeInteger:0x270a toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+	
+	// Bunch of unused fields.
+	[GSShapefileHelper writeInteger:0x0000 toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+	[GSShapefileHelper writeInteger:0x0000 toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+	[GSShapefileHelper writeInteger:0x0000 toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+	[GSShapefileHelper writeInteger:0x0000 toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+	[GSShapefileHelper writeInteger:0x0000 toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+	
+	// Write the file length in 16 bit words.
+	[GSShapefileHelper writeInteger:bufferSize / 2 toBuffer:headerBuffer + index useBigEndian:YES];
+	index += SHAPEFILE_INT_SIZE;
+
+	// Write the file version.
+	[GSShapefileHelper writeInteger:0x03e8 toBuffer:headerBuffer + index useBigEndian:NO];
+	index += SHAPEFILE_INT_SIZE;
+	
+	// Write the first record's shape type.
+	if (self.records.count) {
+		[GSShapefileHelper writeInteger:((GSShapefileRecord *)self.records[0]).shapeType toBuffer:headerBuffer + index useBigEndian:NO];
+	}
+	else {
+		[GSShapefileHelper writeInteger:GSShapefileShapeTypeNull toBuffer:headerBuffer + index useBigEndian:NO];
+	}
+	index += SHAPEFILE_INT_SIZE;
+	
+	// Write the bounding box.
+	if (self.boundingBox) {
+		[GSShapefileHelper writeFloat:self.boundingBox.xMin toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.yMin toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.xMax toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.yMax toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.zMin toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.zMax toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.mMin toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+		[GSShapefileHelper writeFloat:self.boundingBox.mMax toBuffer:headerBuffer + index];
+		index += SHAPEFILE_DOUBLE_SIZE;
+	}
+	else {
+		index += 8 * SHAPEFILE_DOUBLE_SIZE;
+	}
+	
+	// Create an NSData object with the header.
+	NSMutableData *fileData = [[NSMutableData alloc] initWithBytes:headerBuffer length:headerSize];
+	free(headerBuffer);
+
+	// Append all the record data.
+	for (NSData *d in recordData) {
+		[fileData appendData:d];
+	}
+	
+	return fileData;
 }
 
 @end

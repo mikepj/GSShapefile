@@ -64,4 +64,18 @@ typedef enum {
  */
 + (CGFloat)fetchFloatFromPointer:(const void *)pointer;
 
+#pragma mark Buffer Writers
+/*! Casts the given NSInteger into an uint32_t, optionally converts endianness, and writes it to the location specified by pointer.
+ * \param i The integer to write.
+ * \param pointer The buffer location to write to.  This method assumes at least 4 bytes of memory is allocated at the buffer pointer.
+ * \param bigEndian YES if the data should be written in big endian format.
+ */
++ (void)writeInteger:(NSInteger)i toBuffer:(void *)pointer useBigEndian:(BOOL)bigEndian;
+
+/*! Casts the given CGFloat as a double and writes it to the location specified by pointer.
+ * \param f The CGFloat to write.
+ * \param pointer The buffer location to write to.  This method assumes at least 8 bytes of memory is allocated at the buffer pointer.
+ */
++ (void)writeFloat:(CGFloat)f toBuffer:(void *)pointer;
+
 @end

@@ -74,6 +74,12 @@
 	return (self.records != nil);
 }
 
+- (NSUInteger)totalPointsCount {
+	NSUInteger vertexCount = 0;
+	for (GSShapefileRecord *record in self.records) vertexCount += record.pointsCount;
+	return vertexCount;
+}
+
 #pragma mark Parse Helpers
 - (BOOL)shapefileIsValid:(NSData *)shapefileData {
 	if (!shapefileData) return NO;

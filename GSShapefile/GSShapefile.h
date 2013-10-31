@@ -49,4 +49,9 @@
  */
 - (BOOL)parseSHPData:(NSData *)shpData;
 
+/*! A convenience method to get the total number of points parsed from the Shapefile.
+ * \returns The point count.
+ */
+- (NSUInteger)totalPointsCount;
+
 @end

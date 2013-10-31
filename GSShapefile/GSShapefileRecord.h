@@ -71,7 +71,8 @@ typedef struct {
  */
 - (BOOL)parseRecordData:(NSData *)recordData;
 
-/*! There may be certain situations where we want to set the points array from outside our class (the RDP category, for example).  This method makes sure that is done properly.  The points passed in is copied, so the client retains ownership of the points array and must free it properly.
+/*! There may be certain situations where we want to set the points array from outside our class (the RDP category, for example).  This method makes sure that is done properly.  
+ *  The points buffer passed in is copied, so the caller retains ownership and must free it properly.
  * \param pArray A new array of GSShapefilePoints.
  * \param pCount The count of how many points are in pArray.
  */

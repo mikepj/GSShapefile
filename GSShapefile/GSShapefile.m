@@ -74,7 +74,7 @@
 	return (self.records != nil);
 }
 
-- (NSUInteger)totalPointsCount {
+- (NSUInteger)totalPointCount {
 	NSUInteger vertexCount = 0;
 	for (GSShapefileRecord *record in self.records) vertexCount += record.pointsCount;
 	return vertexCount;

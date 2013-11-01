@@ -81,6 +81,6 @@ typedef struct {
 /*! Returns an NSData object with bytes for this record, to save the Shapefile data to a file, for example.
  * \returns The NSData object with bytes just for this record.
  */
-- (NSData *)saveData;
+- (NSData *)shpData;
 
 @end

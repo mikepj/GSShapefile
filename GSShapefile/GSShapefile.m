@@ -44,7 +44,7 @@
 
 @implementation GSShapefile
 
-- (instancetype)initWithData:(NSData *)shpData {
+- (instancetype)initWithSHPData:(NSData *)shpData {
 	self = [super init];
 	if (self) {
 		BOOL success = [self parseSHPData:shpData];
@@ -127,13 +127,13 @@
 	else return records;
 }
 
-- (NSData *)saveData {
+- (NSData *)shpData {
 	// Get NSData objects for all our records.
 	NSMutableArray *recordData = [NSMutableArray array];
 	
 	NSUInteger totalRecordSize = 0;
 	for (GSShapefileRecord *record in self.records) {
-		NSData *d = [record saveData];
+		NSData *d = [record shpData];
 		if (d) {
 			[recordData addObject:d];
 			totalRecordSize += d.length;

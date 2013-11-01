@@ -157,7 +157,7 @@
 	}
 }
 
-- (NSData *)saveData {
+- (NSData *)shpData {
 	if (self.shapeType == GSShapefileShapeTypePoint) {
 		// header + shape type + 1 point.
 		NSUInteger bufferSize = (3 * SHAPEFILE_INT_SIZE) + (2 * SHAPEFILE_DOUBLE_SIZE);

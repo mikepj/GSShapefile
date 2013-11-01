@@ -25,7 +25,7 @@ Sample code:
 
 
   NSData *filedata = [[NSData alloc] initWithContentsOfFile:@"somefile.shp"];
-  GSShapefile *shapefile = [[GSShapefile alloc] initWithData:fileData];
+  GSShapefile *shapefile = [[GSShapefile alloc] initWithSHPData:fileData];
   if (!shapefile) return NO;
 	
   // Count the number of points in the shapefile.
@@ -46,7 +46,7 @@ If you would like to reduce the number of points in your Shapefile before workin
   #import "GSShapefile+RDP.h"
 
   NSData *filedata = [[NSData alloc] initWithContentsOfFile:@"somefile.shp"];
-  GSShapefile *shapefile = [[GSShapefile alloc] initWithData:fileData];
+  GSShapefile *shapefile = [[GSShapefile alloc] initWithSHPData:fileData];
   if (!shapefile) return NO;
 
   NSUInteger originalNumPoints = [shapefile totalPointCount];
@@ -55,6 +55,6 @@ If you would like to reduce the number of points in your Shapefile before workin
   NSLog(@"Reduced the number of points from %d to %d.", originalNumPoints, newNumPoints);
   
   // Might want to save out the new Shapefile.
-  NSData *smallerShapefileData = [shapefile saveData];
+  NSData *smallerShapefileData = [shapefile shpData];
   [smallerShapefileData writeToFile:@"foo" atomically:YES];
 ```

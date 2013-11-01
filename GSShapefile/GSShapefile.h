@@ -41,7 +41,7 @@
  * \param shpData The Shapefile data to parse.
  * \returns A new GSShapefile object.
  */
-- (instancetype)initWithData:(NSData *)shpData;
+- (instancetype)initWithSHPData:(NSData *)shpData;
 
 /*! Sets up our object with the passed in data.  This will release any past parsed data before it starts.
  * \param shpData The Shapefile data to parse (read from an .SHP file).
@@ -58,6 +58,6 @@
  * This can be used to either build your own Shapefile from the ground up, or to take an existing Shapefile and process it (reduce points using the RDP code, for example).
  * \returns The NSData object with our file data.
  */
-- (NSData *)saveData;
+- (NSData *)shpData;
 
 @end

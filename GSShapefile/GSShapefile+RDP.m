@@ -39,7 +39,7 @@
 	for (GSShapefileRecord *record in self.records) {
 		GSShapefileRecord *reducedRecord = [self rdpReducePointsInRecord:record epsilon:epsilon];
 		if (!reducedRecord) {
-			NSLog(@"Failed to reduce the points in record %d.", record.recordNumber);
+			NSLog(@"Failed to reduce the points in record %ld.", (long)record.recordNumber);
 			return;
 		}
 		

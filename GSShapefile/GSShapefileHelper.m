@@ -46,7 +46,7 @@
 
 #pragma mark Buffer Writers
 + (void)writeInteger:(NSInteger)i toBuffer:(void *)pointer useBigEndian:(BOOL)bigEndian {
-	uint32_t r = i;
+	uint32_t r = (uint32_t)i;
 	if (bigEndian) r = CFSwapInt32HostToBig(r);
 	else r = CFSwapInt32HostToLittle(r);
 	memcpy(pointer, &r, sizeof(uint32_t));

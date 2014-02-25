@@ -79,7 +79,10 @@
 		numPoints = 1;
 		
 		// Parse the X and Y values
-		if (fileIndex + (2 * SHAPEFILE_DOUBLE_SIZE) > recordData.length) return NO;
+		if (fileIndex + (2 * SHAPEFILE_DOUBLE_SIZE) > recordData.length) {
+			free(newPoints);
+			return NO;
+		}
 		newPoints[0].x = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
 		fileIndex += SHAPEFILE_DOUBLE_SIZE;
 		newPoints[0].y = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
@@ -123,7 +126,10 @@
 		// Read the points.
 		NSUInteger newPointsIndex = 0;
 		for (NSInteger i = 0; i < numPoints; i++) {
-			if (fileIndex + (2 * SHAPEFILE_DOUBLE_SIZE) > recordData.length) return NO;
+			if (fileIndex + (2 * SHAPEFILE_DOUBLE_SIZE) > recordData.length) {
+				free(newPoints);
+				return NO;
+			}
 			newPoints[newPointsIndex].x = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
 			fileIndex += SHAPEFILE_DOUBLE_SIZE;
 			newPoints[newPointsIndex].y = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];

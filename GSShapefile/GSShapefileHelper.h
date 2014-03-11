@@ -30,7 +30,7 @@
 #define SHAPEFILE_INT_SIZE (4)
 #define SHAPEFILE_DOUBLE_SIZE (8)
 
-typedef enum {
+typedef enum : NSInteger {
 	GSShapefileShapeTypeNull = 0,
 	GSShapefileShapeTypePoint = 1,
 	GSShapefileShapeTypePolyLine = 3,

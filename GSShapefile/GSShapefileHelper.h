@@ -25,7 +25,8 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-#import <Foundation/Foundation.h>
+@import Foundation;
+@import CoreGraphics;
 
 #define SHAPEFILE_INT_SIZE (4)
 #define SHAPEFILE_DOUBLE_SIZE (8)

@@ -87,6 +87,10 @@
 		fileIndex += SHAPEFILE_DOUBLE_SIZE;
 		newPoints[0].y = [GSShapefileHelper fetchFloatFromPointer:fileStart + fileIndex];
 		fileIndex += SHAPEFILE_DOUBLE_SIZE;
+		
+		GSShapefileBoundingBox *b = [[GSShapefileBoundingBox alloc] init];
+		b.xMin = b.xMax = newPoints[0].x;
+		b.yMin = b.yMax = newPoints[0].y;
 	}
 	else if ((self.shapeType == GSShapefileShapeTypePolyLine) || (self.shapeType == GSShapefileShapeTypePolygon)) {
 		// Parse the bounding box.
@@ -107,6 +111,7 @@
 		// Read the number of points.
 		if (fileIndex + SHAPEFILE_INT_SIZE > recordData.length) return NO;
 		numPoints = [GSShapefileHelper fetchIntegerFromPointer:fileStart + fileIndex isBigEndian:NO];
+		if (numPoints < 1) return NO;
 		fileIndex += SHAPEFILE_INT_SIZE;
 		
 		// Read the parts.
@@ -137,6 +142,9 @@
 
 			newPointsIndex++;
 		}
+	}
+	else {
+		return NO;
 	}
 
 	// Parsing is done, set our points.

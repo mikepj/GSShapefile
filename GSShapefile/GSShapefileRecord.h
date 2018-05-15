@@ -51,36 +51,36 @@ typedef struct {
 @property GSShapefileShapeType shapeType;
 
 /// Most records have a bounding box, which define edge coordinates for the data.
-@property GSShapefileBoundingBox *boundingBox;
+@property (nonnull) GSShapefileBoundingBox *boundingBox;
 
 /// GSShapefileShapeTypePoint and GSShapefileShapeTypeMultiPoint:  An array of pointsCount GSShapefilePoints.
-@property (readonly) GSShapefilePoint *points;
-@property (readonly) NSUInteger pointsCount;
+@property (nonnull, readonly) GSShapefilePoint *points;
+@property (readonly) NSInteger pointsCount;
 
 /// An array of NSNumbers.  Each part points to an index in the points array and designates the start of a new part.
-@property NSArray *parts;
+@property (nullable) NSArray<NSNumber *> *parts;
 
 /*! Init a new record object and call parseRecordData with the given data.
  * \returns The new GSShapefileRecord object.
  */
-- (instancetype)initWithRecordData:(NSData *)recordData;
+- (nullable instancetype)initWithRecordData:(nonnull NSData *)recordData;
 
 /*! Parse a record from the given data.  This will zero out any previously parsed data.
  * \param recordData An NSData object with the raw bytes of just this single record.
  * \returns YES if record was parsed successfully.
  */
-- (BOOL)parseRecordData:(NSData *)recordData;
+- (BOOL)parseRecordData:(nonnull NSData *)recordData;
 
 /*! There may be certain situations where we want to set the points array from outside our class (the RDP category, for example).  This method makes sure that is done properly.  
  *  The points buffer passed in is copied, so the caller retains ownership and must free it properly.
  * \param pArray A new array of GSShapefilePoints.
  * \param pCount The count of how many points are in pArray.
  */
-- (void)setPoints:(GSShapefilePoint *)pArray count:(NSUInteger)pCount;
+- (void)setPoints:(nullable GSShapefilePoint *)pArray count:(NSUInteger)pCount;
 
 /*! Returns an NSData object with bytes for this record, to save the Shapefile data to a file, for example.
  * \returns The NSData object with bytes just for this record.
  */
-- (NSData *)shpData;
+- (nullable NSData *)shpData;
 
 @end

@@ -32,22 +32,22 @@
 @interface GSShapefile : NSObject
 
 /// The bounding box covered by this shapefile.
-@property GSShapefileBoundingBox *boundingBox;
+@property (nonnull) GSShapefileBoundingBox *boundingBox;
 
 /// An array of GSShapefileRecord objects that we have parsed.
-@property NSArray *records;
+@property (nonnull) NSArray<GSShapefileRecord *> *records;
 
 /*! Allocate a GSShapefile object and call parseFileData with the data passed in.
  * \param shpData The Shapefile data to parse.
  * \returns A new GSShapefile object.
  */
-- (instancetype)initWithSHPData:(NSData *)shpData;
+- (nullable instancetype)initWithSHPData:(nullable NSData *)shpData;
 
 /*! Sets up our object with the passed in data.  This will release any past parsed data before it starts.
  * \param shpData The Shapefile data to parse (read from an .SHP file).
  * \returns YES if parsing completed successfully.
  */
-- (BOOL)parseSHPData:(NSData *)shpData;
+- (BOOL)parseSHPData:(nullable NSData *)shpData;
 
 /*! A convenience method to get the total number of points parsed from the Shapefile.
  * \returns The point count.
@@ -58,6 +58,6 @@
  * This can be used to either build your own Shapefile from the ground up, or to take an existing Shapefile and process it (reduce points using the RDP code, for example).
  * \returns The NSData object with our file data.
  */
-- (NSData *)shpData;
+- (nonnull NSData *)shpData;
 
 @end
